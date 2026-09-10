@@ -9,6 +9,7 @@ const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static('public'));
+app.get('/', (req, res) => res.sendFile(process.cwd() + '/index.html'));
 
 const systemPrompt = `You are the treatment-education intelligence inside Dental Reel Engine, a professional AI content system for dentists.
 
