@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dental Reel Engine</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#687386;--line:#e4e8ef;--accent:#2563eb;--accent2:#1d4ed8;--soft:#eff6ff;--danger:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+.app{max-width:1080px;margin:auto;padding:28px 18px 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:26px}.brand{font-weight:800;font-size:22px}.badge{font-size:12px;padding:7px 10px;border-radius:999px;background:var(--soft);color:var(--accent);font-weight:700}
+.hero{background:linear-gradient(135deg,#172033,#263b63);color:white;border-radius:24px;padding:34px;margin-bottom:22px}.hero h1{margin:0 0 10px;font-size:36px}.hero p{margin:0;color:#dbe5f5;max-width:700px;line-height:1.6}
+.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}.nav button,.primary,.secondary{border:0;border-radius:14px;padding:14px 16px;font-weight:750;cursor:pointer;font-size:14px}.nav button{background:white;border:1px solid var(--line);color:var(--text)}.nav button.active,.primary{background:var(--accent);color:white}.secondary{background:#eef2f7;color:var(--text)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;margin-bottom:18px}.panel h2{margin:0 0 6px}.sub{color:var(--muted);margin:0 0 20px;line-height:1.5}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.full{grid-column:1/-1}label{display:block;font-weight:700;font-size:13px;margin-bottom:7px}input,select,textarea{width:100%;padding:12px 13px;border:1px solid #d7dde7;border-radius:11px;background:#fff;font:inherit;color:var(--text)}textarea{min-height:100px;resize:vertical}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.hidden{display:none}.notice{background:#f8fafc;border:1px solid var(--line);padding:13px;border-radius:12px;color:var(--muted);font-size:13px}
+.output{background:#fbfcff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:18px}.output h3{margin:0 0 12px}.hook{font-size:18px;font-weight:800;line-height:1.45;background:var(--soft);padding:16px;border-radius:13px}
+.scene{border-left:4px solid var(--accent);padding:12px 14px;background:white;border:1px solid var(--line);border-left-width:4px;border-radius:10px;margin:10px 0}.scene b{display:block;margin-bottom:5px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.day{background:white;border:1px solid var(--line);border-radius:11px;padding:10px;font-size:12px;min-height:90px}.day strong{display:block;margin-bottom:6px}.small{font-size:12px;color:var(--muted)}.check{display:flex;gap:10px;align-items:flex-start;margin:8px 0}.check input{width:auto;margin-top:3px}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:25px}
+@media(max-width:720px){.grid,.nav{grid-template-columns:1fr}.calendar{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:29px}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><div class="brand">🦷 Dental Reel Engine</div><div class="badge">FOUNDING MVP</div></div>
+
+  <section class="hero">
+    <h1>Turn dental knowledge into Reels.</h1>
+    <p>Set up your dentist profile once, build a 30-day content plan, and generate ready-to-film Reels with hooks, scripts, shots, captions and safety checks.</p>
+  </section>
+
+  <div class="nav">
+    <button class="active" onclick="showTab('profile',this)">👤 My Profile</button>
+    <button onclick="showTab('today',this)">🎬 Today's Reel</button>
+    <button onclick="showTab('animated',this)">🎨 Animated Reel</button><button onclick="showTab('treatments',this)">🦷 Treatments</button>
+    <button onclick="showTab('plan',this)">📅 30-Day Plan</button>
+  </div>
+
+  <section id="profile" class="panel">
+    <h2>👤 Build Your Dentist Profile</h2>
+    <p class="sub">Complete this once. The information is saved in this browser and used to personalize your content.</p>
+    <div class="grid">
+      <div><label>Type of dentist</label><input id="specialty" placeholder="e.g. General + Implant Dentist"></div>
+      <div><label>Ideal patients</label><input id="patients" placeholder="e.g. Adults 30–60 with missing teeth"></div>
+      <div><label>Treatment/service to grow</label><input id="treatment" placeholder="e.g. Dental implants"></div>
+      <div><label>Content language</label><select id="language"><option>English</option><option>Hindi</option><option>Hinglish</option></select></div>
+      <div class="full"><label>Communication style</label><select id="style"><option>Friendly + Professional + Conversational</option><option>Educational</option><option>Friendly + Funny</option><option>Storyteller</option><option>Professional + Premium</option></select></div>
+    </div>
+    <div class="actions"><button class="primary" onclick="saveProfile()">Save My Profile</button><button class="secondary" onclick="loadProfile()">Load Saved Profile</button></div>
+    <div id="profileMsg" class="notice hidden"></div>
+  </section>
+
+  <section id="today" class="panel hidden">
+    <h2>🎬 Today's Reel</h2>
+    <p class="sub">Give the engine a topic—or let it use a suggested topic based on your profile.</p>
+    <div class="grid">
+      <div class="full"><label>Topic (optional)</label><input id="topic" placeholder="e.g. Can I ignore a missing tooth?"></div>
+      <div><label>Reel length</label><select id="length"><option>30–45 seconds</option><option>45–60 seconds</option><option>5-minute quick mode</option></select></div>
+      <div><label>Preferred format</label><select id="format"><option>Talking head + B-roll</option><option>Talking head</option><option>Q&A</option><option>Myth vs Fact</option><option>Storytelling</option><option>Dentist POV</option></select></div>
+    </div>
+    <div class="actions"><button class="primary" onclick="generateReel()">Generate My Reel</button><button class="secondary" onclick="randomTopic()">Give Me A Topic</button></div>
+    <div id="reelOutput"></div>
+  </section>
+
+  <section id="animated" class="panel hidden">
+    <h2>🎨 Animated Reel Generator</h2>
+    <p class="sub">Don't want to be on camera? Turn a dental topic into short, scene-by-scene prompts for an AI video generator.</p>
+    <div class="grid">
+      <div class="full"><label>Dental topic</label><input id="animTopic" placeholder="e.g. Can I ignore a missing tooth?"></div>
+      <div><label>Animation style</label><select id="animStyle"><option>Premium 3D medical animation</option><option>Friendly 3D character animation</option><option>Clean 2D medical explainer</option><option>Cinematic medical animation</option><option>Minimal modern motion graphics</option></select></div>
+      <div><label>Video duration</label><select id="animLength"><option>30–40 seconds</option><option>40–60 seconds</option></select></div>
+    </div>
+    <div class="actions"><button class="primary" onclick="generateAnimated()">Generate Animated Reel</button><button class="secondary" onclick="randomAnimatedTopic()">Give Me A Topic</button></div>
+    <div id="animatedOutput"></div>
+  </section>
+
+  <section id="treatments" class="tab-section">
+    <div class="card"><h2>🦷 Treatment Library</h2><p>Choose a treatment to create a patient-education Reel. The AI will explain what it is, why it is done, how it works, what to expect, risks, alternatives, aftercare, and patient questions—without hiding behind generic disclaimers.</p><div id="treatmentLibrary"></div></div>
+  </section>
+
+  <section id="plan" class="panel hidden">
+    <h2>📅 My 30-Day Plan</h2>
+    <p class="sub">Generate a practical month instead of 30 random dental topics.</p>
+    <div class="actions"><button class="primary" onclick="generatePlan()">Generate 30-Day Plan</button></div>
+    <div id="planOutput"></div>
+  </section>
+
+  <div class="footer">Dental Reel Engine • AI-generated content must be reviewed by the dentist before publishing.</div>
+</div>
+
+<script>
+const qs=id=>document.getElementById(id);
+const getProfile=()=>({specialty:qs('specialty').value||'General Dentistry',patients:qs('patients').value||'Adults seeking dental care',treatment:qs('treatment').value||'Dental care',language:qs('language').value,style:qs('style').value});
+
+function showTab(id,btn){
+  ['profile','today','animated','plan'].forEach(x=>qs(x).classList.toggle('hidden',x!==id));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+}
+function saveProfile(){
+  localStorage.setItem('dreProfile',JSON.stringify(getProfile()));
+  qs('profileMsg').textContent='✓ Profile saved. Your future Reels and content plans will use these details.';
+  qs('profileMsg').classList.remove('hidden');
+}
+function loadProfile(){
+  const p=JSON.parse(localStorage.getItem('dreProfile')||'null');
+  if(!p){qs('profileMsg').textContent='No saved profile found. Fill in your details first.';qs('profileMsg').classList.remove('hidden');return}
+  qs('specialty').value=p.specialty;qs('patients').value=p.patients;qs('treatment').value=p.treatment;qs('language').value=p.language;qs('style').value=p.style;
+  qs('profileMsg').textContent='✓ Saved profile loaded.';qs('profileMsg').classList.remove('hidden');
+}
+const topics=[
+'Can you ignore a missing tooth if it does not hurt?','Why do gums bleed while brushing?','Does scaling weaken teeth?','Can a cavity heal by itself?','Why does my tooth hurt only while eating?','Does root canal treatment hurt?','How do you know if a tooth can be saved?','What should you ask before getting an implant?','Why does food keep getting stuck between my teeth?','When should a toothache be checked?'
+];
+function randomTopic(){qs('topic').value=topics[Math.floor(Math.random()*topics.length)];}
+
+function langPrefix(p){
+  if(p.language==='Hinglish') return 'Agar aapke mind mein ye question hai, simple answer samajhiye:';
+  if(p.language==='Hindi') return 'अगर आपके मन में यह सवाल है, तो इसे आसान भाषा में समझिए:';
+  return 'If you have been wondering about this, here is the simple way to think about it:';
+}
+async function generateReel(){
+ const p=getProfile(), t=qs('topic').value.trim(), fmt=qs('format').value, len=qs('length').value;
+ if(!t){ alert('Please enter a Reel topic first.'); return; }
+ const out=qs('reelOutput');
+ out.innerHTML='<div class="output"><h3>🤖 AI is writing your Reel…</h3><p>Creating a topic-specific script, hooks, scenes and caption.</p></div>';
+ try{
+  const r=await fetch('/api/generate-reel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile:p,topic:t,length:len,format:fmt})});
+  const data=await r.json(); if(!r.ok) throw new Error(data.error||'Generation failed');
+  const scenes=Array.isArray(data.scenes)?data.scenes:[];
+  out.innerHTML=`<div class="output"><h3>🎬 Your AI Reel Is Ready</h3><p><b>Topic:</b> ${esc(t)} &nbsp; <b>Format:</b> ${esc(fmt)} &nbsp; <b>Length:</b> ${esc(len)}</p>
+  <h3>🪝 3 Hook Options</h3><div class="scene"><b>Hook A</b><br>${esc(data.hook1)}</div><div class="scene"><b>Hook B</b><br>${esc(data.hook2)}</div><div class="scene"><b>Hook C</b><br>${esc(data.hook3)}</div>
+  <h3>🏆 Recommended Hook</h3><div class="hook">${esc(data.recommendedHook)}</div>
+  <h3>🎙️ FULL SPOKEN SCRIPT</h3><div class="scene" style="white-space:pre-line;border-left-color:#1d4ed8">${esc(data.spokenScript)}</div>
+  <h3>🎥 SCENE-BY-SCENE</h3>${scenes.map((s,i)=>`<div class="scene"><b>Scene ${i+1} • ${esc(s.shot||'')}</b><br><b>Say:</b> ${esc(s.dialogue||'')}<br><b>Camera:</b> ${esc(s.camera||'')}<br><b>Action:</b> ${esc(s.action||'')}<br><b>On-screen text:</b> ${esc(s.onScreenText||'')}<br><b>B-roll:</b> ${esc(s.bRoll||'')}</div>`).join('')}
+  <h3>📝 CAPTION</h3><p>${esc(data.caption)}</p><h3>📣 CTA</h3><p><b>${esc(data.cta)}</b></p><h3>🖼️ COVER</h3><p><b>${esc(data.cover)}</b></p><h3>🛡️ SAFETY CHECK</h3><div class="notice">${esc(data.safety)}</div>
+  <div class="actions"><button class="secondary" onclick="copyReel()">Copy Complete Reel</button><button class="secondary" onclick="randomTopic();generateReel()">Different Topic</button></div></div>`;
+ }catch(e){ out.innerHTML=`<div class="output"><h3>⚠️ Couldn't generate the Reel</h3><p>${esc(e.message)}</p><p>Make sure the backend is running and your OpenAI API key is configured.</p></div>`; }
+}
+function shortCover(t){let words=t.replace(/[?.,]/g,'').split(' '); return words.slice(0,6).join(' ')+'?';}
+function copyReel(){
+  const text=qs('reelOutput').innerText; navigator.clipboard?.writeText(text);
+  alert('Reel copied to clipboard.');
+}
+
+function randomAnimatedTopic(){qs('animTopic').value=topics[Math.floor(Math.random()*topics.length)];}
+
+function generateAnimated(){
+ const p=getProfile(), t=qs('animTopic').value.trim()||topics[0], style=qs('animStyle').value, dur=qs('animLength').value;
+ const char=`fictional Indian adult patient, approximately 40 years old, medium build, short black hair, trimmed beard, wearing a navy blue polo shirt and dark trousers, friendly natural facial expression`;
+ const clinic=`clean modern dental clinic, consistent dental chair and equipment, bright soft clinical lighting, premium educational animation`;
+ const base=`${style}, vertical 9:16 short-form educational video, polished professional rendering, smooth natural motion, clear non-graphic dental visualization, consistent character and environment`;
+ const scenes=[
+  [`Scene 1 • 0–4 sec`,`Show ${char} noticing a missing tooth in a bathroom mirror, looking curious rather than frightened. Slow gentle push-in toward the face.`,`"${p.language==='Hinglish'?'Ek tooth missing hai, but pain nahi ho raha... toh kya usse ignore kar sakte ho?':'If a tooth is missing but there is no pain, can you simply ignore it?'}"`],
+  [`Scene 2 • 4–11 sec`,`Show the same character in ${clinic}, seated for a consultation. Dentist is shown as a generic fictional clinician, not a real person. Medium two-shot, calm conversation.`,`"This is a common question, but the right answer depends on the individual situation."`],
+  [`Scene 3 • 11–25 sec`,`Use a clean educational 3D dental model to show one missing tooth area. Subtle labels/arrows indicate that surrounding structures and overall oral condition may matter. Top-down macro camera, slow controlled movement.`,`"The significance of a missing tooth can depend on which tooth is missing, the surrounding teeth, and your overall oral health."`],
+  [`Scene 4 • 25–34 sec`,`Return to the same character. They listen attentively as the fictional dentist points to the educational model. Warm reassuring lighting.`,`"So instead of deciding based only on whether it hurts, an evaluation can help you understand what options may be appropriate."`],
+  [`Scene 5 • 34–40 sec`,`The character smiles naturally. Clean clinic background. Camera settles into a medium close-up. Leave clear negative space for the final CTA text.`,`"Have a dental question? Ask it below."`]
+ ];
+ let cards=scenes.map((s,i)=>`<div class="scene"><b>${s[0]}</b><div><b>Visual:</b> ${esc(s[1])}</div><div><b>Voice-over:</b> ${esc(s[2])}</div><div><b>On-screen text:</b> ${esc(i===0?'Missing tooth… ignore it?':i===2?'It depends on your situation':i===4?'Ask your dental question':'')}</div><div class="notice" style="margin-top:10px"><b>Copy-paste video prompt:</b><br>${esc(`${base}. ${s[1]} Character continuity: ${char}. Environment continuity: ${clinic}. Camera: natural cinematic movement, no abrupt cuts. Keep dental anatomy educational and non-graphic. Maintain consistent clothing, face, proportions and clinic layout. No gore, no blood, no distorted teeth, no duplicate teeth, no malformed anatomy, no text artifacts, no watermark, no logo, no sudden camera movement.`)}</div></div>`).join('');
+ qs('animatedOutput').innerHTML=`<div class="output">
+ <h3>🎨 Animated Reel Ready</h3>
+ <p><b>Topic:</b> ${esc(t)} &nbsp; <b>Style:</b> ${esc(style)} &nbsp; <b>Duration:</b> ${esc(dur)}</p>
+ <h3>📖 Visual Bible</h3>
+ <p><b>Character:</b> ${esc(char)}<br><b>Environment:</b> ${esc(clinic)}<br><b>Format:</b> Vertical 9:16</p>
+ <h3>🎞️ Scene Prompts</h3>${cards}
+ <h3>🎙️ Complete Voice-over</h3>
+ <p style="line-height:1.65">"${esc(p.language==='Hinglish'?`Ek tooth missing hai, but pain nahi ho raha... toh kya usse ignore kar sakte ho? Ye ek common question hai, but right answer individual situation par depend karta hai. Missing tooth ka significance is baat par depend kar sakta hai ki kaunsa tooth missing hai, surrounding teeth ki condition kya hai, aur overall oral health kaisi hai. Sirf pain ke basis par decision lene ke bajay, dental evaluation se appropriate options samajhna better hai. Aapka koi dental question hai? Comment mein pooch sakte ho.`:`If a tooth is missing but there is no pain, can you simply ignore it? This is a common question, but the right answer depends on the individual situation. The significance of a missing tooth can depend on which tooth is missing, the surrounding teeth, and your overall oral health. Instead of deciding based only on pain, a dental evaluation can help you understand what options may be appropriate. Have a dental question? Ask it below.`)}</p>
+ <h3>✂️ Editing Plan</h3><p>Generate each scene separately, place them in order, add the voice-over across the sequence, add concise captions, keep transitions simple, and use light background music under the narration.</p>
+ <h3>🛡️ Safety Check</h3><div class="notice">Review clinical claims before publishing. Do not present the animation as a real patient case. Do not diagnose viewers or promise outcomes. Keep anatomy non-graphic and avoid identifiable patient information.</div>
+ <div class="actions"><button class="secondary" onclick="copyAnimated()">Copy Animated Reel</button><button class="secondary" onclick="randomAnimatedTopic();generateAnimated()">Different Topic</button></div>
+ </div>`;
+}
+function copyAnimated(){navigator.clipboard?.writeText(qs('animatedOutput').innerText);alert('Animated Reel copied to clipboard.');}
+
+const treatmentGroups={
+"Preventive & Diagnostic":["Dental examination / oral screening","Dental X-rays / radiographs","CBCT / 3D dental imaging","Professional dental cleaning / scaling","Fluoride treatment","Pit and fissure sealants","Oral hygiene instruction","Night guard / occlusal splint"],
+"Restorative Dentistry":["Dental fillings / composite restorations","Glass ionomer restoration","Inlays and onlays","Dental crowns","Temporary / provisional crown","Post and core restoration","Fractured tooth restoration","Replacement of old restorations"],
+"Endodontics":["Root canal treatment (RCT)","Root canal re-treatment","Emergency treatment for pulpal pain","Pulpotomy","Pulpectomy","Apexification","Regenerative endodontic treatment","Apicoectomy / periapical surgery"],
+"Periodontics":["Gingivitis treatment","Scaling and root planing / deep cleaning","Periodontal maintenance","Periodontal flap surgery","Gum graft / soft-tissue graft","Crown lengthening","Gingivectomy / gingivoplasty","Periodontal splinting"],
+"Prosthodontics & Tooth Replacement":["Dental bridge","Removable partial denture","Complete denture","Immediate denture","Implant-supported crown","Implant-supported bridge","Implant-retained overdenture","Full-arch implant rehabilitation","Full-mouth rehabilitation"],
+"Implant Dentistry":["Single dental implant","Multiple dental implants","Implant crown","Bone grafting / augmentation","Sinus lift","Guided implant placement","Implant uncovering / second-stage surgery","Peri-implant disease treatment","Implant maintenance"],
+"Oral & Maxillofacial Surgery":["Simple tooth extraction","Surgical tooth extraction","Wisdom tooth removal","Alveoloplasty / ridge preparation","Frenectomy","Biopsy / oral lesion evaluation","Pre-prosthetic surgery","Management of oral surgical emergencies"],
+"Orthodontics":["Metal braces","Ceramic braces","Clear aligners","Retainers","Interceptive orthodontics","Space maintainers","Orthodontic expansion","Relapse / finishing treatment"],
+"Esthetic / Cosmetic Dentistry":["Teeth whitening","Composite bonding","Veneers","Smile design","Enamel contouring / reshaping","Replacement of discoloured restorations","Gum contouring for smile aesthetics"],
+"Pediatric Dentistry":["Fluoride application for children","Sealants for children","Primary tooth filling","Pulpotomy in primary teeth","Pulpectomy in primary teeth","Stainless steel crown","Space maintainer","Habit counselling"],
+"Emergency Dentistry":["Dental trauma assessment","Broken tooth emergency care","Knocked-out permanent tooth emergency care","Acute toothache assessment","Dental abscess management","Temporary emergency restoration","Post-operative dental emergency review"],
+"Specialized / Advanced":["TMJ / orofacial pain evaluation","Sleep-apnea oral appliance therapy","Oral cancer screening / referral","Geriatric dental care","Special-needs dentistry","Full-mouth rehabilitation","Complex multidisciplinary dental treatment"]
+};
+function renderTreatmentLibrary(){const el=qs('treatmentLibrary');if(!el)return;el.innerHTML=Object.entries(treatmentGroups).map(([g,items])=>`<div class="card"><h3>${g}</h3><div class="pills">${items.map(x=>`<button class="secondary" style="width:auto;margin:4px;padding:8px 10px;font-size:13px" onclick="useTreatment(${JSON.stringify(x)})">${x}</button>`).join('')}</div></div>`).join('')}
+function useTreatment(x){qs('topic').value=x;const btn=document.querySelector('[onclick*="showTab(\\'today\\'"]');showTab('today',btn);window.scrollTo({top:0,behavior:'smooth'})}
+renderTreatmentLibrary();
+
+function generatePlan(){
+ const p=getProfile(); const arr=topics.concat([
+ '3 questions to ask before dental treatment','What dentists wish patients knew','A common dental mistake people make','What happens during a dental check-up?','How to prepare for a dental appointment','Dentist POV: one thing I wish patients asked earlier','What to do when a tooth breaks','Dental emergency: when should you seek care?','Implant vs bridge: what should patients ask?','A simple oral-health habit worth keeping'
+ ]);
+ const html=arr.slice(0,30).map((t,i)=>`<div class="day"><strong>Day ${i+1}</strong>${esc(t)}<div class="small" style="margin-top:7px">${i<8?'Attention':i<15?'Education':i<22?'Trust + Treatment':'Decision + Connection'}</div></div>`).join('');
+ qs('planOutput').innerHTML=`<div class="output"><h3>30-Day Content Calendar</h3><p><b>Goal:</b> ${esc(p.treatment)} • <b>Audience:</b> ${esc(p.patients)}</p><div class="calendar">${html}</div><div class="actions"><button class="secondary" onclick="copyPlan()">Copy Plan</button></div></div>`;
+}
+function copyPlan(){navigator.clipboard?.writeText(qs('planOutput').innerText);alert('30-day plan copied to clipboard.')}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+loadProfile();
+</script>
+</body>
+</html>
