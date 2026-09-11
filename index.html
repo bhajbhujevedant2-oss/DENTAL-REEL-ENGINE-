@@ -186,7 +186,7 @@ const treatmentGroups={
 "Specialized / Advanced":["TMJ / orofacial pain evaluation","Sleep-apnea oral appliance therapy","Oral cancer screening / referral","Geriatric dental care","Special-needs dentistry","Full-mouth rehabilitation","Complex multidisciplinary dental treatment"]
 };
 function renderTreatmentLibrary(){const el=qs('treatmentLibrary');if(!el)return;el.innerHTML=Object.entries(treatmentGroups).map(([g,items])=>`<div class="card"><h3>${g}</h3><div class="pills">${items.map(x=>`<button class="secondary" style="width:auto;margin:4px;padding:8px 10px;font-size:13px" onclick="useTreatment(${JSON.stringify(x)})">${x}</button>`).join('')}</div></div>`).join('')}
-function useTreatment(x){qs('topic').value=x;const btn=document.querySelector('[onclick*="showTab(\\'today\\'"]');showTab('today',btn);window.scrollTo({top:0,behavior:'smooth'})}
+function useTreatment(x){qs('topic').value=x;const btn=document.
 renderTreatmentLibrary();
 
 function generatePlan(){
