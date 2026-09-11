@@ -74,7 +74,7 @@
     <div id="animatedOutput"></div>
   </section>
 
-  <section id="treatments" class="tab-section">
+  <section id="treatments" class="panel hidden">
     <div class="card"><h2>🦷 Treatment Library</h2><p>Choose a treatment to create a patient-education Reel. The AI will explain what it is, why it is done, how it works, what to expect, risks, alternatives, aftercare, and patient questions—without hiding behind generic disclaimers.</p><div id="treatmentLibrary"></div></div>
   </section>
 
@@ -93,7 +93,7 @@ const qs=id=>document.getElementById(id);
 const getProfile=()=>({specialty:qs('specialty').value||'General Dentistry',patients:qs('patients').value||'Adults seeking dental care',treatment:qs('treatment').value||'Dental care',language:qs('language').value,style:qs('style').value});
 
 function showTab(id,btn){
-  ['profile','today','animated','plan'].forEach(x=>qs(x).classList.toggle('hidden',x!==id));
+  ['profile','today','animated','treatments','plan'].forEach(x=>qs(x).classList.toggle('hidden',x!==id));
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
 }
 function saveProfile(){
@@ -193,15 +193,57 @@ function useTreatment(x){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function generatePlan(){
- const p=getProfile(); const arr=topics.concat([
- '3 questions to ask before dental treatment','What dentists wish patients knew','A common dental mistake people make','What happens during a dental check-up?','How to prepare for a dental appointment','Dentist POV: one thing I wish patients asked earlier','What to do when a tooth breaks','Dental emergency: when should you seek care?','Implant vs bridge: what should patients ask?','A simple oral-health habit worth keeping'
- ]);
- const html=arr.slice(0,30).map((t,i)=>`<div class="day"><strong>Day ${i+1}</strong>${esc(t)}<div class="small" style="margin-top:7px">${i<8?'Attention':i<15?'Education':i<22?'Trust + Treatment':'Decision + Connection'}</div></div>`).join('');
- qs('planOutput').innerHTML=`<div class="output"><h3>30-Day Content Calendar</h3><p><b>Goal:</b> ${esc(p.treatment)} • <b>Audience:</b> ${esc(p.patients)}</p><div class="calendar">${html}</div><div class="actions"><button class="secondary" onclick="copyPlan()">Copy Plan</button></div></div>`;
-renderTreatmentLibrary();
+  const p=getProfile();
 
-function copyPlan(){navigator.clipboard?.writeText(qs('planOutput').innerText);alert('30-day plan copied to clipboard.')}
-function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  const arr=topics.concat([
+    '3 questions to ask before dental treatment',
+    'What dentists wish patients knew',
+    'A common dental mistake people make',
+    'What happens during a dental check-up?',
+    'How to prepare for a dental appointment',
+    'Dentist POV: one thing I wish patients asked earlier',
+    'What to do when a tooth breaks',
+    'Dental emergency: when should you seek care?',
+    'Implant vs bridge: what should patients ask?',
+    'A simple oral-health habit worth keeping'
+  ]);
+
+  const html=arr.slice(0,30).map((t,i)=>
+    `<div class="day">
+      <strong>Day ${i+1}</strong>
+      ${esc(t)}
+      <div class="small" style="margin-top:7px">
+        ${i<8?'Attention':i<15?'Education':i<22?'Trust + Treatment':'Decision + Connection'}
+      </div>
+    </div>`
+  ).join('');
+
+  qs('planOutput').innerHTML=
+    `<div class="output">
+      <h3>30-Day Content Calendar</h3>
+      <p><b>Goal:</b> ${esc(p.treatment)} • <b>Audience:</b> ${esc(p.patients)}</p>
+      <div class="calendar">${html}</div>
+      <div class="actions">
+        <button class="secondary" onclick="copyPlan()">Copy Plan</button>
+      </div>
+    </div>`;
+}
+
+function copyPlan(){
+  navigator.clipboard?.writeText(qs('planOutput').innerText);
+  alert('30-day plan copied to clipboard.');
+}
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g,m=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[m]));
+}
+renderTreatmentLibrary();
 loadProfile();
 </script>
 </body>
