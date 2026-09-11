@@ -198,7 +198,8 @@ function generatePlan(){
  ]);
  const html=arr.slice(0,30).map((t,i)=>`<div class="day"><strong>Day ${i+1}</strong>${esc(t)}<div class="small" style="margin-top:7px">${i<8?'Attention':i<15?'Education':i<22?'Trust + Treatment':'Decision + Connection'}</div></div>`).join('');
  qs('planOutput').innerHTML=`<div class="output"><h3>30-Day Content Calendar</h3><p><b>Goal:</b> ${esc(p.treatment)} • <b>Audience:</b> ${esc(p.patients)}</p><div class="calendar">${html}</div><div class="actions"><button class="secondary" onclick="copyPlan()">Copy Plan</button></div></div>`;
-}
+renderTreatmentLibrary();
+
 function copyPlan(){navigator.clipboard?.writeText(qs('planOutput').innerText);alert('30-day plan copied to clipboard.')}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 loadProfile();
